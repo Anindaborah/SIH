@@ -1,5 +1,6 @@
 const { express } = require("express")
 const { User } = require('../db')
+const bcrypt=require('bcrypt')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = "123456"
 const { json } = require("body-parser")
@@ -60,13 +61,13 @@ const userSchema = new Schema({
 
     password:{
         type:String,
-        required:true,
+        required:true
     
     },
     confirmPassword:{
         type: String,
-        required: true,
-        unique:true,
+        required: true
+       
     }
     
 })
@@ -91,29 +92,28 @@ app.post('/signup',(req,res) => {
 
 
     User.findOne({
-        name : name,
-        password : password,
+        
         phoneNo : phoneNo,
         email : email,
         aadharNo:aadharNo,
-        address:address,
-        pin:pin,
-        state:state,
-        district:district
+       
 
     })
     .then(function(value){
         if(value==null){
             return res.status(411).json({
-                message: "username does not exist"
+                message: "User already exists with these credentials"
             })
         }
     })
+
+    const salt=await bcrypt.genSalt(10)
+    const hashedPassword=await bcrypt.hash(password,salt)
     
 
     User.create({
         name : name,
-        password : password,
+        password : hashedPassword,
         phoneNo : phoneNo,
         email : email,
         aadharNo:aadharNo,
