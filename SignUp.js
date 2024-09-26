@@ -107,8 +107,19 @@ app.post('/signup',(req,res) => {
         }
     })
 
-    const salt=await bcrypt.genSalt(10)
-    const hashedPassword=await bcrypt.hash(password,salt)
+    // const salt=await bcrypt.genSalt(10)
+    // const hashedPassword=await bcrypt.hash(password,salt)
+
+    async function hashedPassword(password) {
+        const salt = 10; 
+        try {
+          const hashedPassword = await bcrypt.hash(password, salt);
+          return hashedPassword;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
     
 
     User.create({
@@ -125,9 +136,9 @@ app.post('/signup',(req,res) => {
     
     }).then(function(value){
         if(value==null){
-            message : "user could not be created"
+            message : "User could not be created"
         }else{
-            message  : " user created successfully"
+            message  : "User created successfully"
         }
     })
 
