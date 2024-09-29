@@ -107,18 +107,22 @@ app.post('/signup',(req,res) => {
         }
     })
 
-    // const salt=await bcrypt.genSalt(10)
-    // const hashedPassword=await bcrypt.hash(password,salt)
+   
 
-    async function hashedPassword(password) {
-        const salt = 10; 
-        try {
-          const hashedPassword = await bcrypt.hash(password, salt);
-          return hashedPassword;
-        } catch (err) {
-          console.error(err);
-        }
-      }
+    // async function hashedPassword(password) {
+    //     const salt = 10; 
+    //     try {
+    //       const hashedPassword = await bcrypt.hash(password, salt);
+    //       return hashedPassword;
+    //     } catch (err) {
+    //       console.error(err);
+    //     }
+    //   }
+    function hashedPassword(){
+        hashedPassword=12345;
+        return hashedPassword;
+    }
+
 
     
 
@@ -150,3 +154,5 @@ app.post('/signup',(req,res) => {
         token : token
     })
 })
+
+export {hashedPassword}
