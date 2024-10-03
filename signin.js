@@ -1,22 +1,18 @@
 const express=require('express')
 const mongoose=require('mongoose')
-const jsonwebtoken=require('jsonwebtoken')
+const jwt=require('jsonwebtoken')
 const bcrypt=require('bcrypt')
 const bodyParser = require('body-parser')
-
 const{hashedPassword}=require( '/Signup.js')
+const user=require('./loginSchema.js')
+const JWT_SECRET='your_secret_key'
 
-const userSchema=new mongoose.Schema({
-    username:{
-        type:String,
-        required:true,
-        unique:true
-    },
-    password:{
-        type:String,
-        required:true
-    }
-})
+const app=express()
+
+app.post('/login', async(req,res)=>{
+    const {username, password}=req.body
+
+
 
 const user=User.findOne()
 if(!user){
@@ -32,3 +28,29 @@ async function isPasswordCorrect(password) {
     message:'please enter correct password'
    })
 }
+
+const token=jwt.sign({userId:user._id},JWT_SECRET,{expiresIn:'1h'})
+res.json({token})
+})
+
+app.get('/protected', (req,res)=>{
+    const token=req.headers['authorization']
+
+    if(!token){
+        return res.status(400).json({
+            message:'token do not match'
+        })
+    }
+
+    try {
+        const userFormat=jwt.verify(token, JWT_SECRET)
+        res.json({
+            message:'protected data', userId: userFormat.userId
+        })
+        
+    } catch (error) {
+        return res.status(400).json({
+            message:'request failed'
+        })
+    }
+})
