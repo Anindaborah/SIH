@@ -24,7 +24,7 @@ if(!user){
 async function isPasswordCorrect(password) {
     const isPasswordCorrect= await bcrypt.comparePassword( password, hashedPassword())
 }if(!isPasswordCorrect){
-   return res.status(400).json({
+   return res.status(401).json({
     message:'please enter correct password'
    })
 }
@@ -37,7 +37,7 @@ app.get('/protected', (req,res)=>{
     const token=req.headers['authorization']
 
     if(!token){
-        return res.status(400).json({
+        return res.status(401).json({
             message:'token do not match'
         })
     }
@@ -53,4 +53,8 @@ app.get('/protected', (req,res)=>{
             message:'request failed'
         })
     }
+})
+
+app.listen(3000,()=>{
+    console.log('Server is listening on port 3000');
 })
