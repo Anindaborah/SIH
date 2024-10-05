@@ -4,7 +4,7 @@ const jwt=require('jsonwebtoken')
 const bcrypt=require('bcrypt')
 const bodyParser = require('body-parser')
 const{hashedPassword}=require( '/Signup.js')
-const user=require('./loginSchema.js')
+const User=require('./loginSchema')
 const JWT_SECRET='your_secret_key'
 
 const app=express()
@@ -14,7 +14,7 @@ app.post('/login', async(req,res)=>{
 
 
 
-const user=User.findOne()
+const user=User.findOne(username, password)
 if(!user){
     return res.status(400).json({
         message:'Please enter correct username and password'

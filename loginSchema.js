@@ -9,6 +9,11 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true
+    },
+    language:{
+        type:String,
+        enum:[english,hindi,assamese,marathi],
+        default:english
     }
 })
 
