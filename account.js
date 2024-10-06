@@ -3,6 +3,7 @@ const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
 const JWT_SECRET="123456"
 const user=require('./loginSchema')
+const bodyParser=require('body-parser')
 
 const app=express()
 
@@ -15,9 +16,9 @@ function authenticateAccount(req,res,next) {
     }
     try {
         const decoded=jwt.verify(token,JWT_SECRET)
-        res.status(200).json({
-            message:'Account details fetched successfully',account:
-        })
+         req.userId=decoded.userId
+            next()
+        
     } catch (error) {
         res.status(404).json({
             message:'Token not found'
@@ -25,16 +26,34 @@ function authenticateAccount(req,res,next) {
     }
 }
 
-app.get('')
-
-app.post('/account',(req,res)=>{
+app.get('/account-details',authenticateAccount,async (req,res)=>{
     try {
-        res.status(200).json({
-            message:'Account details loaded successfully',account:
-        })
+        const User= await user.findById(req.userId)
+        if(!User){
+            return res.status(404).json({
+                message:'User not found'
+            })
+        }
+        res.status(200).json(user)
     } catch (error) {
-        res.status(401).json({
-            message:'There was some error in loading your account details'
+        res.status(400).json({
+            message:'Unable to load account details'
         })
     }
 })
+
+app.listen(3000,()=>{
+    console.log('Server is listening on port 3000');
+    
+})
+// app.post('/account',(req,res)=>{
+//     try {
+//         res.status(200).json({
+//             message:'Account details loaded successfully',account:
+//         })
+//     } catch (error) {
+//         res.status(401).json({
+//             message:'There was some error in loading your account details'
+//         })
+//     }
+// })
