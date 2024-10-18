@@ -46,14 +46,3 @@ app.listen(3000,()=>{
     console.log('Server is listening on port 3000');
     
 })
-// app.post('/account',(req,res)=>{
-//     try {
-//         res.status(200).json({
-//             message:'Account details loaded successfully',account:
-//         })
-//     } catch (error) {
-//         res.status(401).json({
-//             message:'There was some error in loading your account details'
-//         })
-//     }
-// })

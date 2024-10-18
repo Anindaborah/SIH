@@ -4,10 +4,12 @@ const jwt=require('jsonwebtoken')
 const bcrypt=require('bcrypt')
 const bodyParser = require('body-parser')
 const{hashedPassword}=require( '/Signup.js')
-const User=require('./loginSchema')
+const{ User }=require('./userSchema')
 const JWT_SECRET='your_secret_key'
 
 const app=express()
+
+app.use(express.json())
 
 app.post('/login', async(req,res)=>{
     const {username, password}=req.body
@@ -22,18 +24,26 @@ if(!user){
 }
 
 async function isPasswordCorrect(password) {
-    const isPasswordCorrect= await bcrypt.comparePassword( password, hashedPassword())
-}if(!isPasswordCorrect){
-   return res.status(401).json({
-    message:'please enter correct password'
-   })
+    if (password!=password) {
+        return res.status(401).json({
+            message:'Please enter correct password'
+        })
+    } 
 }
+
+// async function isPasswordCorrect(password) {
+//     const isPasswordCorrect= await bcrypt.comparePassword( password, password())
+// }if(!isPasswordCorrect){
+//    return res.status(401).json({
+//     message:'please enter correct password'
+//    })
+// }
 
 const token=jwt.sign({userId:user._id},JWT_SECRET,{expiresIn:'1h'})
 res.json({token})
 })
 
-app.get('/protected', (req,res)=>{
+app.get('/authorization', (req,res)=>{
     const token=req.headers['authorization']
 
     if(!token){

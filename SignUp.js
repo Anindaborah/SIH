@@ -1,78 +1,20 @@
-const { express } = require("express")
-const { User } = require('../db')
-const bcrypt=require('bcrypt')
+// import {createModule} from "module"
+// const require=createModule(import.meta.url)
+
+const express=require('express')
+const { User } = require('./userSchema')
+// const bcrypt=require('bcrypt')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = "123456"
 const { json } = require("body-parser")
 const mongoose = require('mongoose')
 
-const Schema=mongoose.Schema
 
-const app = express()   
+const app = express() 
 
-const districtSchema=new Schema({
-    district:{
-        type:String,
-        required:true
-    }
-})
+app.use(express.json()) 
 
-const userSchema = new Schema({
-    name:{
-        type: String,
-        required: true,
-        unique:true,
-    },
-    role:{
-        type:String,
-        enum:['buyer','farmer','storage provider'],
-        required:true
-    },
-    phoneNo:{
-        type: Number,
-        required: true,
-        unique:true,
-    },
-    email:{
-        type: String,
-        required: false,
-        unique:true,
-    },
-    aadharNo:{
-        type:Number,
-        required:true,
-        unique:true
-
-    },
-    address:{
-        type:String,
-        required:true
-    },
-    pin:{
-        type:Number,
-        required:true
-    },
-    state:{
-        type:String,
-        required:true
-    },
-
-    district:districtSchema,
-
-    password:{
-        type:String,
-        required:true
-    
-    },
-    confirmPassword:{
-        type: String,
-        required: true
-       
-    }
-    
-})
-
-app.post('/signup',(req,res) => {
+app.post('/signup',async (req,res) => {
     const name = req.body.name
     const phoneNo = req.body.phoneNo
     const email = req.body.email
@@ -80,10 +22,10 @@ app.post('/signup',(req,res) => {
     const address = req.body.address
     const pin = req.body.pin
     const state = req.body.state
-    const district = req.body.district
+    // const district = req.body.district
      const password = req.body.password
      const confirmPassword = req.body.confirmPassword
-
+    const role = req.body.role
      if (password !== confirmPassword) {
         return res.status(400).json({
             message: "Passwords do not match"
@@ -91,68 +33,76 @@ app.post('/signup',(req,res) => {
     }
 
 
-    User.findOne({
-        
+    const existingUser = await User.findOne({
         phoneNo : phoneNo,
-        email : email,
-        aadharNo:aadharNo,
-       
-
+        aadharNo : aadharNo
     })
-    .then(function(value){
-        if(value==null){
-            return res.status(411).json({
-                message: "User already exists with these credentials"
-            })
-        }
-    })
+    
+    if(existingUser){
+        res.status(411).json({
+            msg : "user already exists"
+        })
+    }
 
    
 
-    // async function hashedPassword(password) {
-    //     const salt = 10; 
-    //     try {
-    //       const hashedPassword = await bcrypt.hash(password, salt);
-    //       return hashedPassword;
-    //     } catch (err) {
-    //       console.error(err);
-    //     }
-    //   }
-    function hashedPassword(){
-        hashedPassword=12345;
-        return hashedPassword;
-    }
+    // // async function hashedPassword(password) {
+    // //     const salt = 10; 
+    // //     try {
+    // //       const hashedPassword = await bcrypt.hash(password, salt);
+    // //       return hashedPassword;
+    // //     } catch (err) {
+    // //       console.error(err);
+    // //     }
+    // //   }
+    // // function hashedPassword(){
+    // //     hashedPassword=12345;
+    // //     return hashedPassword;
+    // // }
 
 
     
 
-    User.create({
+    const newUser = await User.create({
         name : name,
-        password : hashedPassword,
+        password : password,
         phoneNo : phoneNo,
         email : email,
         aadharNo:aadharNo,
+        role : role,
         address:address,
         pin:pin,
         state:state,
-        district:district
-
-    
-    }).then(function(value){
-        if(value==null){
-            message : "User could not be created"
-        }else{
-            message  : "User created successfully"
-        }
-    })
+        confirmPassword : confirmPassword
+        // district:district
+    }) 
+    // if(newUser){
+    //     res.status(200).json({
+    //         msg : "user created successfully"
+    //     })
+    // }else{
+    //     res.status(411).json({
+    //         msg : "user could not be created"
+    //     })
+    // }
 
 
     const userId = req.body._id;
 
     var token = jwt.sign({userId : req.body._id},JWT_SECRET)
     res.status(200).json({
+        msg : "user created successfully",
         token : token
     })
+
+    // res.json({
+    //     name : name
+    // })
 })
 
-export {hashedPassword}
+// export {hashedPassword}
+
+app.listen(5000,()=>{
+    console.log('Server is listening on port 5000');
+    
+})
