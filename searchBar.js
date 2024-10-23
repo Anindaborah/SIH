@@ -13,9 +13,7 @@ app.use(express.json())
 app.get('/search-result',async (req,res)=>{
     const findModel=res.query
     try {
-      const result=await User.find({
-        name:name
-      })
+      const result=await User.find()
         if(result!==0){
          res.status(200).send(result)
         }

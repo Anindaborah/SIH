@@ -42,6 +42,24 @@ app.get('/account-details',authenticateAccount,async (req,res)=>{
     }
 })
 
+app.delete('/deleteAccount',async (req,res)=>{
+    try{const deleteUser= await user.findByIdAndDelete(req.userId)
+        res.status(200).send({
+            message:'User deleted successfully'
+        })
+      
+    }
+    catch(err){
+        res.status(401).send({
+            message:'User cannot be deleted'
+        })
+    }
+}
+)
+        
+    
+
+
 app.listen(3000,()=>{
     console.log('Server is listening on port 3000');
     
